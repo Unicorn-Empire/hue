@@ -344,6 +344,14 @@ var Query = function (vm, query) {
     }
     vm.search();
   };
+
+  self.reset = function () {
+    self.uuid(UUID());
+    self.qs.removeAll();
+    self.addQ();
+    self.fqs.removeAll();
+	self.start(0); 
+  }
 };
 
 
@@ -688,7 +696,7 @@ var Collection = function (vm, collection) {
 
       // TODO Reload QueryResult
       facet.queryResult = ko.observable(new QueryResult(self, {
-         type: self.engine(),
+        type: self.engine(),
       }));
     }
   }
@@ -1637,6 +1645,22 @@ var SearchViewModel = function (collection_json, query_json, initial_json) {
     self.query.start(0);
     self.search();
   };
+
+  self.newSearch = function() {
+	hueUtils.changeURL('/search');
+    self.columns([]);
+    self.query.reset();
+    self.collection.qdefinitions.removeAll();    
+    //self.collection.label(''); // TODO
+    self.selectedQDefinition(null);
+
+    self.initial.inited(true);
+    self.initial.init();
+
+
+    self.isEditing(true);
+  };
+
 
   self.checkStatus = function (facet) { // TODO: have a common generic with Notebook
     $.post("/notebook/api/check_status", {
