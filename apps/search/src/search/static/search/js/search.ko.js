@@ -1545,11 +1545,13 @@ var SearchViewModel = function (collection_json, query_json, initial_json) {
   self.hasRetrievedResults = ko.observable(true);
   self.asyncSearchesCounter = ko.observableArray([]);
   self.asyncSearchesCounter.subscribe(function(newVal) {
-  if (newVal.length == 0) {
-    self.isRetrievingResults(false);
-    self.hasRetrievedResults(true);
-    $('.btn-loading').button('reset');
-  }
+    if (newVal.length == 0) {
+      self.isRetrievingResults(false);
+      self.hasRetrievedResults(true);
+      $('.btn-loading').button('reset');
+
+      huePubSub.publish('check.autorefresh');
+    }
   });
 
   self.showCores = ko.observable(false);
@@ -1894,8 +1896,8 @@ var SearchViewModel = function (collection_json, query_json, initial_json) {
                   result: data,
                   status: 'running',
                   progress: 0,
-               }));
-               self.checkStatus(self.collection);
+              }));
+              self.checkStatus(self.collection);
             }
           }
           catch (e) {
@@ -1935,7 +1937,7 @@ var SearchViewModel = function (collection_json, query_json, initial_json) {
   };
 
   self._make_grid_result = function(data, callback) {
-    if (typeof callback === "function") {
+    if (typeof callback === "function") { // For Solr Auto refresh
       callback(data);
     }
 
